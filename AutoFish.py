@@ -28,6 +28,7 @@ def on_press(key):
         stop = 1
         return False
     # Функция для получения изображения с экрана
+
 def get_screen_image(choice):
     if choice == 0:
         pyautogui.screenshot('screens\\image.png')
@@ -48,6 +49,7 @@ def newbase():
     array_screen = np.array(cropped_screen)
     screen_bin = cv2.threshold(array_screen, 150, 255, cv2.THRESH_BINARY)[1]
     cv2.imwrite("screens\\base.png", screen_bin)
+
 def select_zone():
     global x1, y1, x2, y2
     
@@ -61,8 +63,10 @@ def reset_coords():
     y1 = int(0)
     x2 = int(0)
     y2 = int(0)
+    print("Coords now should be reseted, so coords now:\n x1 = ", x1,"\n y1 = ", y1,"\n x2 = ", x2,"\n y2 = ", y2)
 
     # Функция для сравнения двух изображений
+
 def compare_images(image1, image2):
     diff = cv2.absdiff(image1, image2)
 
@@ -76,16 +80,29 @@ def compare_images(image1, image2):
 
     # Функция для выбора зоны на экране
 
+def waterchoice():
+    global source_choice
+    source_choice = 1
+    print("You picked water, so source choice now = ", source_choice)
+
+def lavachoice():
+    global source_choice
+    source_choice = 2
+    print("You picked lava, so source choice now = ", source_choice)
 
 def clicked():
     global selected_zone
     selected_zone = select_zone()
 
 def startprog():
-    global stop
+    global stop, source_choice
+    if source_choice == 1: #If user pick a water source
+        delay_after_fish = 0.5
+    elif source_choice == 2: #If user pick a lava source
+        delay_after_fish = 1
+
     kblistener = keyboard.Listener(on_press=on_press)
     kblistener.start()
-    mcontr = mouse.Controller()
     image1 = get_screen_image(1)
     cv2.imshow("image1",image1)
     cv2.waitKey(0)
@@ -108,14 +125,12 @@ def startprog():
             win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,0,0)
             time.sleep(0.2)
             win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,0,0)
-            time.sleep(0.5)
+            time.sleep(delay_after_fish)
             image2 = get_screen_image(0)
-            time.sleep(0.5)
+            time.sleep(delay_after_fish)
         else:
             print("res = ", res)
 
-        # Обновляем исходное изображение
-        image1 = image2
         if stop == 1:
             stop = 0
             break
@@ -137,18 +152,24 @@ def main():
 
     lbl = Label(root, text = "Press button to choose area")
     lbl.grid()
-    btn = Button(root, text="Select area",
+    select_btn = Button(root, text="Select area",
                  fg = "red", command=clicked)
-    btn2 = Button(root, text="Get new base",
+    new_base_btn = Button(root, text="Get new base",
                  fg = "red", command=newbase)
-    btn3 = Button(root, text="Reset coordinates",
+    water_btn = Button(root, text="Water",
+                 fg = "blue", command=waterchoice)
+    lava_btn = Button(root, text="Lava",
+                 fg = "red", command=lavachoice)
+    reset_btn = Button(root, text="Reset coordinates",
                  fg = "red", command=reset_coords)
-    btn4 = Button(root, text="Start",
+    start_btn = Button(root, text="Start",
                  fg = "red", command=startprog)
-    btn.grid(column=1,row=0)
-    btn2.grid(column=1,row=1)
-    btn3.grid(column=1,row=2)
-    btn4.grid(column=2,row=0)
+    select_btn.grid(column=1,row=0)
+    new_base_btn.grid(column=1,row=1)
+    water_btn.grid(column=2,row=0)
+    lava_btn.grid(column=2,row=1)
+    reset_btn.grid(column=3,row=0)
+    start_btn.grid(column=3,row=1)
     root.mainloop()
     
 
