@@ -41,6 +41,13 @@ def get_screen_image(choice):
         screen_bin = cv2.threshold(array_screen, 150, 255, cv2.THRESH_BINARY)[1]
     return screen_bin
 
+def newbase():
+    pyautogui.screenshot('screens\\image.png')
+    screen = cv2.imread('screens\\image.png', cv2.IMREAD_GRAYSCALE)
+    cropped_screen = screen[y1:y1+50, x1:x1+64]
+    array_screen = np.array(cropped_screen)
+    screen_bin = cv2.threshold(array_screen, 150, 255, cv2.THRESH_BINARY)[1]
+    cv2.imwrite("screens\\base.png", screen_bin)
 def select_zone():
     global x1, y1, x2, y2
     
@@ -132,13 +139,16 @@ def main():
     lbl.grid()
     btn = Button(root, text="Select area",
                  fg = "red", command=clicked)
-    btn2 = Button(root, text="Reset coordinates",
+    btn2 = Button(root, text="Get new base",
+                 fg = "red", command=newbase)
+    btn3 = Button(root, text="Reset coordinates",
                  fg = "red", command=reset_coords)
-    btn3 = Button(root, text="Start",
+    btn4 = Button(root, text="Start",
                  fg = "red", command=startprog)
     btn.grid(column=1,row=0)
     btn2.grid(column=1,row=1)
-    btn3.grid(column=2,row=0)
+    btn3.grid(column=1,row=2)
+    btn4.grid(column=2,row=0)
     root.mainloop()
     
 
